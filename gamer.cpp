@@ -46,32 +46,32 @@ void Gamer::make_one_step(){
 
 void Gamer::stepForAttackComputersShips(){
 
-    if(GetAsyncKeyState(VK_LEFT)){
-                --x;
-            }
-        if(GetAsyncKeyState(VK_RIGHT)){
-                ++x;
-            }
-        if(GetAsyncKeyState(VK_UP)){
-                --y;
-            }
-        if(GetAsyncKeyState(VK_DOWN)){
-                ++y;
-            }
-        if(GetAsyncKeyState(VK_RETURN)){
+    // if(GetAsyncKeyState(VK_LEFT)){
+    //             --x;
+    //         }
+    //     if(GetAsyncKeyState(VK_RIGHT)){
+    //             ++x;
+    //         }
+    //     if(GetAsyncKeyState(VK_UP)){
+    //             --y;
+    //         }
+    //     if(GetAsyncKeyState(VK_DOWN)){
+    //             ++y;
+    //         }
+    //     if(GetAsyncKeyState(VK_RETURN)){
 
-            this->emit_point_start(x, y);
+    //         this->emit_point_start(x, y);
 
-            if(can_make_step(x, y)){
-                mode_search_cords_for_attack = false;
-                timer_gemers_ships_computers_attack->stop();
-                delete timer_gemers_ships_computers_attack;
-                emit could_steps(Cords(x,y));
-                return;
-            }
-        }
-        this->checkBorder();
-        this->emit_point_start(x, y);
+    //         if(can_make_step(x, y)){
+    //             mode_search_cords_for_attack = false;
+    //             timer_gemers_ships_computers_attack->stop();
+    //             delete timer_gemers_ships_computers_attack;
+    //             emit could_steps(Cords(x,y));
+    //             return;
+    //         }
+    //     }
+    //     this->checkBorder();
+    //     this->emit_point_start(x, y);
 }
 
 void Gamer::checkBorder(){
@@ -109,42 +109,42 @@ void Gamer::setupGamersShips() {
 
         next_ship = false;
     }
-    else{
-        if(GetAsyncKeyState(VK_LEFT)){
-            if (ship->check_dif(cordsOfAllShips, -1, 0)) {
-                ship->change_cords_to_move(-1, 0);
-            }
-        }
-        if(GetAsyncKeyState(VK_RIGHT)){                
-            if (ship->check_dif(cordsOfAllShips, 1, 0)) {
-                ship->change_cords_to_move(1, 0);
-            }
-        }
-        if(GetAsyncKeyState(VK_UP)){
-            if (ship->check_dif(cordsOfAllShips, 0, -1)) {
-                ship->change_cords_to_move(0, -1);
-            }
-        }
-        if(GetAsyncKeyState(VK_DOWN)){
-            if (ship->check_dif(cordsOfAllShips, 0, 1)) {
-                ship->change_cords_to_move(0, 1);
-            }
-        }
-        if(GetAsyncKeyState(VK_SPACE)){
-            if (ship->check_rotate(cordsOfAllShips)) {
-                ship->rotate_ship();
-            }
-        }
+    // else{
+    //     if(GetAsyncKeyState(VK_LEFT)){
+    //         if (ship->check_dif(cordsOfAllShips, -1, 0)) {
+    //             ship->change_cords_to_move(-1, 0);
+    //         }
+    //     }
+    //     if(GetAsyncKeyState(VK_RIGHT)){                
+    //         if (ship->check_dif(cordsOfAllShips, 1, 0)) {
+    //             ship->change_cords_to_move(1, 0);
+    //         }
+    //     }
+    //     if(GetAsyncKeyState(VK_UP)){
+    //         if (ship->check_dif(cordsOfAllShips, 0, -1)) {
+    //             ship->change_cords_to_move(0, -1);
+    //         }
+    //     }
+    //     if(GetAsyncKeyState(VK_DOWN)){
+    //         if (ship->check_dif(cordsOfAllShips, 0, 1)) {
+    //             ship->change_cords_to_move(0, 1);
+    //         }
+    //     }
+    //     if(GetAsyncKeyState(VK_SPACE)){
+    //         if (ship->check_rotate(cordsOfAllShips)) {
+    //             ship->rotate_ship();
+    //         }
+    //     }
 
-        if(GetAsyncKeyState(VK_RETURN)){
-            if (ship->validation_setting_ship_of_near_cords(cordsOfShipAndNearshipscord)) {
-                ship->addCordsOfShip(cordsOfAllShips, cordsOfShipAndNearshipscord);
-                index++;
-                next_ship = true;
-                ShipsOfGamer.push_back(ship);
-            }
-        }
-    }
+    //     if(GetAsyncKeyState(VK_RETURN)){
+    //         if (ship->validation_setting_ship_of_near_cords(cordsOfShipAndNearshipscord)) {
+    //             ship->addCordsOfShip(cordsOfAllShips, cordsOfShipAndNearshipscord);
+    //             index++;
+    //             next_ship = true;
+    //             ShipsOfGamer.push_back(ship);
+    //         }
+    //     }
+    // }
     emit send_all_objects(ship);
 }
 
