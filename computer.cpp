@@ -260,7 +260,7 @@ size_t Computer::distance_for_direction( int x, int y, int shipSize) {
     size_t distance = 0;
     std::vector<size_t> distances_vec;
 
-    for (int d_y = std::min(y, size_of_board - 1); d_y < std::min(y + shipSize, size_of_board); ++d_y) {
+    for (int d_y = y; d_y < std::min(y + shipSize, size_of_board); ++d_y) {
         if (vectorCordsOfShipsOpponent[d_y][x] != MapItem::EMPTY) {
             break;
         }
@@ -269,7 +269,7 @@ size_t Computer::distance_for_direction( int x, int y, int shipSize) {
     distances_vec.push_back(distance);
     distance = 0;
 
-    for (int d_y = std::max(y, 0); d_y >= std::max(y - shipSize + 1, 0); --d_y) {
+    for (int d_y = y; d_y >= std::max(y - shipSize + 1, 0); --d_y) {
         if (vectorCordsOfShipsOpponent[d_y][x] != MapItem::EMPTY) {
             break;
         }
@@ -278,7 +278,7 @@ size_t Computer::distance_for_direction( int x, int y, int shipSize) {
     distances_vec.push_back(distance);
     distance = 0;
 
-    for (int d_x = std::min(x, size_of_board - 1); d_x < std::min(x + shipSize, size_of_board); ++d_x) {
+    for (int d_x = x; d_x < std::min(x + shipSize, size_of_board); ++d_x) {
         if (vectorCordsOfShipsOpponent[y][d_x] != MapItem::EMPTY) {
             break;
         }
@@ -287,7 +287,7 @@ size_t Computer::distance_for_direction( int x, int y, int shipSize) {
     distances_vec.push_back(distance);
     distance = 0;
 
-    for (int d_x = std::max(x, 0); d_x >= std::max(x - shipSize + 1, 0); --d_x) {
+    for (int d_x = x; d_x >= std::max(x - shipSize + 1, 0); --d_x) {
         if (vectorCordsOfShipsOpponent[y][d_x] != MapItem::EMPTY) {
             break;
         }

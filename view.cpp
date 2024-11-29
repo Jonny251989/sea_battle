@@ -2,13 +2,10 @@
 #include <QColor>
 
 
-My_view::My_view(QWidget *parent)
-    : QGraphicsView(parent)
-
-{
+My_view::My_view(QWidget *parent, Gamer* gamer, Computer* computer) : QGraphicsView(parent), gamer_(gamer), computer_(computer){
     width = 1200;
     heigth = 1200;
-    setFocusPolicy(Qt::StrongFocus);
+    setFocusPolicy(Qt::NoFocus);
     this->setFixedHeight(heigth);
     this->setFixedWidth(width);
 
@@ -26,31 +23,10 @@ My_view::My_view(QWidget *parent)
     this->setAlignment(Qt::AlignCenter);                        // Делаем привязку содержимого к центру
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);    // Растягиваем содержимое по виджету
 
-   
-    gamer = new Gamer();
-    computer = new Computer();
     
     this->draw_field();
-
-
-    game = new Game(parent, gamer, computer);
-
    
-   connect(computer, &Computer::send_cords_ships_computer, this, &My_view::reload_all_objects_computer);
-   connect(computer, &Computer::send_costs_computer, this, &My_view::reload_all_weights_of_computer);
-   connect(computer, &Computer::send_item_computer, this, &My_view::reload_all_fields_item_of_computer);
-
-   connect(gamer, &Gamer::send_all_objects, this, &My_view::reload_all_objects_gamer);
-   connect(gamer, &Gamer::emit_point_start, this, &My_view::draw_cords_for_attack);
-
-   connect(game, &Game::draw_step_game, this, &My_view::draw_games_steps);
-   connect(game, &Game::game_over, this, &My_view::game_over);
-
-   gamer->setupGamersShips();
-
-   computer -> shipsSetupOnVector();
-   
-   timerBeginGame = new QTimer();
+    timerBeginGame = new QTimer();
 
 }
 
@@ -73,7 +49,7 @@ void My_view::reload_all_fields_item_of_computer(){
 
 
 
-    std::vector<std::vector<MapItem>> field_item_computer = computer->getFieldOfComputersItem();
+    std::vector<std::vector<MapItem>> field_item_computer = computer_->getFieldOfComputersItem();
 
     // SHIP, EMPTY, MISS, WRECKED, DESTROYED, SURROUNDING, REFERENCE_POINTS
     for(int rows = 0; rows < SIZE_FIELD ; ++rows){
@@ -143,7 +119,7 @@ void My_view::reload_all_weights_of_computer(){
     m_moved_weights_of_computer.clear();
 
 
-    std::vector<std::vector<int>> field_costs_computer = computer->getVectorOfCosts();
+    std::vector<std::vector<int>> field_costs_computer = computer_->getVectorOfCosts();
     for(int rows = 0; rows < SIZE_FIELD ; ++rows){
         for(int columns = 0; columns < SIZE_FIELD; ++columns){
 
@@ -192,8 +168,8 @@ void My_view::draw_games_steps(){
     }
     m_moved_games_item.clear();
 
-    auto items_gamer = gamer->getFieldMapOfGamer();
-    auto items_computer = computer->getFieldOfComputersItem();
+    auto items_gamer = gamer_->getFieldMapOfGamer();
+    auto items_computer = computer_->getFieldOfComputersItem();
 
     for (size_t y = 0; y < SIZE_FIELD; ++y ) {
         for (size_t x = 0; x < SIZE_FIELD; ++x ) {
@@ -271,7 +247,7 @@ void My_view::reload_all_objects_gamer(Ship* ship) {
     }
 
 
-    std::vector<Ship*> ships_items = gamer->getshipsOfGamer();
+    std::vector<Ship*> ships_items = gamer_->getshipsOfGamer();
     for(auto ship: ships_items){
         std::vector<Cords> corsdOfShip = ship->getCordsOfShip();
         for (auto it = corsdOfShip.begin(); it != corsdOfShip.end(); ++it) {
@@ -294,7 +270,7 @@ void My_view::reload_all_objects_computer() {
     }
     m_moved_items_computer.clear();
 
-    std::vector<Ship*> ships_items_computer = computer->getshipsOfComputer();
+    std::vector<Ship*> ships_items_computer = computer_->getshipsOfComputer();
     for(auto ship: ships_items_computer){
         std::vector<Cords> corsdOfShipComputer = ship->getCordsOfShip();
 

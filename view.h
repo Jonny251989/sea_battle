@@ -35,8 +35,8 @@ private:
     std::list<QGraphicsItem*> m_moved_games_item;
 
 
-    Gamer* gamer;
-    Computer* computer;
+    Gamer* gamer_;
+    Computer* computer_;
 
     QTimer* timerBeginGame;
 
@@ -46,7 +46,7 @@ private:
     int heigth;
 
 public:
-    My_view(QWidget *parent = nullptr);
+    My_view(QWidget *parent = nullptr, Gamer* gamer = nullptr, Computer* computer = nullptr);
     void draw_field();
 
     void set_all_collors();

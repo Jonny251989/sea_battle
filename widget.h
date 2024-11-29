@@ -2,11 +2,14 @@
 #define WIDGET_H
 
 #include <QWidget>
+#include <QKeyEvent>
 #include "view.h"
 #include "gamer.h"
 #include "ship.h"
 #include "control.h"
 #include "computer.h"
+#include "gamer.h"
+#include "game.h"
 
 class Widget : public QWidget
 {
@@ -17,6 +20,16 @@ public:
     ~Widget();
 
 private:
-    My_view* view;
+    My_view* view_;
+    Computer* computer_;
+    Gamer* gamer_;
+    Game* game_;
+    size_t x, y;
+
+protected:
+   virtual void keyPressEvent(QKeyEvent* event);
+
+signals:
+    void send_key(QKeyEvent* event);
 };
 #endif // WIDGET_H

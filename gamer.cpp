@@ -5,12 +5,12 @@ Gamer::Gamer(QObject* parent):QObject(parent) {
 
     fieldOfMapItem = std::vector<std::vector<MapItem>>(size_of_board, std::vector<MapItem>(size_of_board, MapItem::EMPTY));
     vectorCordsOfShipsOpponent = std::vector<std::vector<MapItem>>(size_of_board, std::vector<MapItem>(size_of_board, MapItem::EMPTY));
-
+    x = 0, y = 0;
     ship = new Ship();
-    timer_gemers_ships_setup = new QTimer();
-    this->shipSetup();
+    //timer_gemers_ships_setup = new QTimer();
+    //this->shipSetup();
 
-    QObject::connect(this, SIGNAL(can_make_step()), this, SLOT(make_one_step()));
+    //QObject::connect(this, SIGNAL(can_make_step()), this, SLOT(make_one_step()));
 }
 
 bool Gamer::getAccesToStepGamer() {
@@ -33,45 +33,47 @@ std::vector<std::vector<MapItem>> Gamer::getFieldMapOfGamer(){
     return vectorCordsOfShipsOpponent;
 }
 
-void Gamer::shipSetup(){
-    QObject::connect(timer_gemers_ships_setup, SIGNAL(timeout()), this, SLOT(setupGamersShips()));
-    timer_gemers_ships_setup->start(100);
-}
+// void Gamer::shipSetup(){
+//     QObject::connect(timer_gemers_ships_setup, SIGNAL(timeout()), this, SLOT(setupGamersShips()));
+//     timer_gemers_ships_setup->start(100);
+// }
 
-void Gamer::make_one_step(){
-    timer_gemers_ships_computers_attack = new QTimer();
-    QObject::connect(timer_gemers_ships_computers_attack, SIGNAL(timeout()), this, SLOT(stepForAttackComputersShips()));
-    timer_gemers_ships_computers_attack->start(90);
-}
+// void Gamer::make_one_step(){
+//     timer_gemers_ships_computers_attack = new QTimer();
+//     QObject::connect(timer_gemers_ships_computers_attack, SIGNAL(timeout()), this, SLOT(stepForAttackComputersShips()));
+//     timer_gemers_ships_computers_attack->start(90);
+// }
 
-void Gamer::stepForAttackComputersShips(){
+void Gamer::stepForAttackComputersShips(QKeyEvent* event){
 
-    // if(GetAsyncKeyState(VK_LEFT)){
-    //             --x;
-    //         }
-    //     if(GetAsyncKeyState(VK_RIGHT)){
-    //             ++x;
-    //         }
-    //     if(GetAsyncKeyState(VK_UP)){
-    //             --y;
-    //         }
-    //     if(GetAsyncKeyState(VK_DOWN)){
-    //             ++y;
-    //         }
-    //     if(GetAsyncKeyState(VK_RETURN)){
+    switch (event->key()) {
+        case Qt::Key_Left:
+            --x;
+            break;
+        case Qt::Key_Right:
+            ++x;
+            break;
+        case Qt::Key_Up:
+            --y;
+            break;
+        case Qt::Key_Down:
+            ++y;
+            break;
+        case Qt::Key_Space:{
+            this->emit_point_start(x, y);
 
-    //         this->emit_point_start(x, y);
-
-    //         if(can_make_step(x, y)){
-    //             mode_search_cords_for_attack = false;
-    //             timer_gemers_ships_computers_attack->stop();
-    //             delete timer_gemers_ships_computers_attack;
-    //             emit could_steps(Cords(x,y));
-    //             return;
-    //         }
-    //     }
-    //     this->checkBorder();
-    //     this->emit_point_start(x, y);
+            if(can_make_step(x, y)){
+                //mode_search_cords_for_attack = false;
+                //timer_gemers_ships_computers_attack->stop();
+                //delete timer_gemers_ships_computers_attack;
+                emit could_steps(Cords(x,y));
+                return;
+            }
+            break;
+        }
+    }
+    this->checkBorder();
+    this->emit_point_start(x, y);
 }
 
 void Gamer::checkBorder(){
@@ -88,13 +90,18 @@ void Gamer::checkBorder(){
         y = SIZE_FIELD - 1;
 }
 
-void Gamer::setupGamersShips() {
+void Gamer::get_key_event(QKeyEvent* event){
+    if(is_setup)
+        setupGamersShips(event);
+    else
+        stepForAttackComputersShips(event);
+}
+
+void Gamer::setupGamersShips(QKeyEvent* event) {
     if(index > SIZE_FIELD - 1){
         next_ship = false;
+        is_setup = false;
         this->addMapItemToFieldItem();
-        timer_gemers_ships_setup->stop();
-        delete timer_gemers_ships_setup;
-        this->make_one_step();
         return;
     }
 
@@ -109,43 +116,50 @@ void Gamer::setupGamersShips() {
 
         next_ship = false;
     }
-    // else{
-    //     if(GetAsyncKeyState(VK_LEFT)){
-    //         if (ship->check_dif(cordsOfAllShips, -1, 0)) {
-    //             ship->change_cords_to_move(-1, 0);
-    //         }
-    //     }
-    //     if(GetAsyncKeyState(VK_RIGHT)){                
-    //         if (ship->check_dif(cordsOfAllShips, 1, 0)) {
-    //             ship->change_cords_to_move(1, 0);
-    //         }
-    //     }
-    //     if(GetAsyncKeyState(VK_UP)){
-    //         if (ship->check_dif(cordsOfAllShips, 0, -1)) {
-    //             ship->change_cords_to_move(0, -1);
-    //         }
-    //     }
-    //     if(GetAsyncKeyState(VK_DOWN)){
-    //         if (ship->check_dif(cordsOfAllShips, 0, 1)) {
-    //             ship->change_cords_to_move(0, 1);
-    //         }
-    //     }
-    //     if(GetAsyncKeyState(VK_SPACE)){
-    //         if (ship->check_rotate(cordsOfAllShips)) {
-    //             ship->rotate_ship();
-    //         }
-    //     }
-
-    //     if(GetAsyncKeyState(VK_RETURN)){
-    //         if (ship->validation_setting_ship_of_near_cords(cordsOfShipAndNearshipscord)) {
-    //             ship->addCordsOfShip(cordsOfAllShips, cordsOfShipAndNearshipscord);
-    //             index++;
-    //             next_ship = true;
-    //             ShipsOfGamer.push_back(ship);
-    //         }
-    //     }
-    // }
-    emit send_all_objects(ship);
+    else{
+         switch (event->key()) {
+            case Qt::Key_Left:{
+                if (ship->check_dif(cordsOfAllShips, -1, 0)) {
+                    ship->change_cords_to_move(-1, 0);
+                }
+                break;
+            }
+            case Qt::Key_Right:{
+                if (ship->check_dif(cordsOfAllShips, 1, 0)) {
+                    ship->change_cords_to_move(1, 0);
+                }
+                break;
+            }
+            case Qt::Key_Up:{
+                if (ship->check_dif(cordsOfAllShips, 0, -1)) {
+                    ship->change_cords_to_move(0, -1);
+                }
+                break;
+            }
+            case Qt::Key_Down:{
+                if (ship->check_dif(cordsOfAllShips, 0, 1)) {
+                    ship->change_cords_to_move(0, 1);
+                }
+                break;
+            }
+            case Qt::Key_Space:{
+                if (ship->check_rotate(cordsOfAllShips)) {
+                    ship->rotate_ship();
+                }
+                break;
+            }
+            case Qt::Key_Return :{
+                if (ship->validation_setting_ship_of_near_cords(cordsOfShipAndNearshipscord)) {
+                    ship->addCordsOfShip(cordsOfAllShips, cordsOfShipAndNearshipscord);
+                    index++;
+                    next_ship = true;
+                    ShipsOfGamer.push_back(ship);
+                }
+                break;
+            }
+        }
+        emit send_all_objects(ship);
+    }
 }
 
 void Gamer::stateProcessing(Cords step, Status status){

@@ -10,7 +10,7 @@
 
         connect(player_gamer, &Gamer::could_steps, this, &Game::getSteps);  
         connect(this, SIGNAL(acces_step()), this, SLOT(game()));
-        connect(this, &Game::can_make_step, player_gamer, &Gamer::make_one_step);
+        //connect(this, &Game::can_make_step, player_gamer, &Gamer::make_one_step);
      }
 
     void Game::getSteps(Cords step_){

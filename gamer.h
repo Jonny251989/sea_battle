@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
-
+#include <QKeyEvent>
 #include <iterator>
 #include <iomanip>
 #include <algorithm>
@@ -30,7 +30,7 @@ class Gamer: public QObject {
     Q_OBJECT
 
 private:
-
+    bool is_setup = true;
     QTimer* timer_gemers_ships_setup;
     QTimer* timer_gemers_ships_computers_attack;
 
@@ -80,7 +80,7 @@ public:
 
     void addMapItemToFieldItem();
 
-    void shipSetup();
+    //void shipSetup();
 
     void addInItsStrikes(Cords step);
 
@@ -104,16 +104,17 @@ public:
 
     std::vector <std::vector<int>>& getMapOfPlayerGamer();
 
-    void add_ship_on_vector(std::vector<Cords> one_ship);
+    //void add_ship_on_vector(std::vector<Cords> one_ship);
 
-    void addShipsOfGamerShipsMap();
+    //void addShipsOfGamerShipsMap();
 
     void checkBorder();
 
 public slots:
-    void setupGamersShips();
-    void stepForAttackComputersShips();
-    void make_one_step();
+    void setupGamersShips(QKeyEvent* event);
+    void stepForAttackComputersShips(QKeyEvent* event);
+    //void make_one_step();
+    void get_key_event(QKeyEvent* event);
 
 signals:
     void send_all_objects(Ship* ships);
@@ -121,7 +122,6 @@ signals:
     void start_gamer();
     void can_make_step();
     void could_steps(Cords);
-
 };
 
 
