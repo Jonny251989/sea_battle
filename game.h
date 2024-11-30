@@ -14,7 +14,7 @@
 #include <tuple>
 
 #include "control.h"
-
+#include "view.h"
 #include "ship.h"
 #include "gamer.h"
 #include "computer.h"
@@ -26,7 +26,7 @@
 #include <QDebug>
 
 
-
+class My_view;
 class Game: public QObject {
     Q_OBJECT
 
@@ -34,6 +34,7 @@ class Game: public QObject {
 private:
 
     std::vector<int> ships_lenght{ 4,3,3,2,2,2,1,1,1,1};
+    My_view* view_;
     Computer* player_computer;
     Gamer* player_gamer;
     Player player = Player::GAMER;
@@ -49,7 +50,7 @@ private:
 
 public:
 
-    Game(QObject *parent = nullptr, Gamer*gamer_ = nullptr, Computer* computer_ = nullptr);
+    Game(QObject *parent = nullptr,  My_view* view = nullptr,  Gamer*gamer = nullptr, Computer* computer = nullptr);
 
     void one_step();
 

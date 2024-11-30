@@ -3,73 +3,100 @@
 #include "control.h"
 
 
-     Game::Game(QObject* parent, Gamer*gamer_, Computer* computer_): QObject(parent), player_gamer(gamer_), player_computer(computer_)  {
-        
-        player = Player::GAMER;
-        mode = AttackMode::SEARCH;
+Game::Game(QObject* parent, My_view* view, Gamer*gamer_, Computer* computer_): QObject(parent), view_(view), player_gamer(gamer_), player_computer(computer_)  {
+    
+    player = Player::GAMER;
+    mode = AttackMode::SEARCH;
+    connect(this, &Game::draw_step_game, view_, &My_view::draw_games_steps);
+    connect(this, &Game::game_over, view_, &My_view::game_over);
 
-        connect(player_gamer, &Gamer::could_steps, this, &Game::getSteps);  
-        connect(this, SIGNAL(acces_step()), this, SLOT(game()));
-        //connect(this, &Game::can_make_step, player_gamer, &Gamer::make_one_step);
-     }
+    connect(computer_, &Computer::send_costs_computer, view_, &My_view::reload_all_weights_of_computer);
+    connect(computer_, &Computer::send_item_computer, view_, &My_view::reload_all_fields_item_of_computer);
 
-    void Game::getSteps(Cords step_){
-        step_gamer = step_;
-        emit acces_step();
-     }
+    connect(gamer_, &Gamer::send_all_objects, view_, &My_view::reload_all_objects_gamer);
+    connect(gamer_, &Gamer::emit_point_start, view_, &My_view::draw_cords_for_attack);
+    connect(player_computer, &Computer::send_cords_ships_computer, view_, &My_view::reload_all_objects_computer);
+    connect(player_gamer, &Gamer::could_steps, this, &Game::getSteps);  
+    connect(this, SIGNAL(acces_step()), this, SLOT(game()));
 
+    player_computer->shipsSetupOnVector();
+}
 
-     void Game::game() {
+void Game::getSteps(Cords step_){
+    step_gamer = step_;
+    emit acces_step();
+}
 
-        switch (player) {
+void Game::game() {
 
-            case Player::GAMER: {
-                
+    switch (player) {
 
-                status_gamer = player_computer->checkKickOpponent(step_gamer.x, step_gamer.y);
+        case Player::GAMER: {
+            
+            status_gamer = player_computer->checkKickOpponent(step_gamer.x, step_gamer.y);
 
-                switch (status_gamer){
-
-                    case Status::DESTROY:{
-                        player_gamer->getLenghtOfDestroyShipAndDeleteShipFromVector(step_gamer.x, step_gamer.y);
-                        break;
-                    }
-                    case Status::MISSING:{
-                        player = Player::COMPUTER;
-                        break;
-                    }
+            switch (status_gamer){
+                case Status::DESTROY:{
+                    player_gamer->getLenghtOfDestroyShipAndDeleteShipFromVector(step_gamer.x, step_gamer.y);
+                    break;
                 }
-                
-                if (player_gamer->emptyShipsVector()){
-                        emit game_over();
-                        break;
+                case Status::MISSING:{
+                    player = Player::COMPUTER;
+                    break;
                 }
-
-                player_gamer->stateProcessing(step_gamer, status_gamer);
-                emit draw_step_game();
-
-                if(status_gamer != Status::MISSING){
-                    emit can_make_step();
-                }
-                else{
-                    emit acces_step();
-                }
-                break;
+            }
+            
+            if (player_gamer->emptyShipsVector()){
+                    emit game_over();
+                    break;
             }
 
-            case Player::COMPUTER: {
+            player_gamer->stateProcessing(step_gamer, status_gamer);
+            emit draw_step_game();
 
-                switch (mode) {
+            if(status_gamer != Status::MISSING){
+                emit can_make_step();
+            }
+            else{
+                emit acces_step();
+            }
+            break;
+        }
 
-                    case AttackMode::SEARCH: {
+        case Player::COMPUTER: {
 
-                        step_computer = player_computer->stepOfCosts();
-                        status_computer = player_gamer->checkKickOpponent(step_computer.x, step_computer.y);
+            switch (mode) {
 
-                        switch (status_computer)
-                        {
+                case AttackMode::SEARCH: {
+
+                    step_computer = player_computer->stepOfCosts();
+                    status_computer = player_gamer->checkKickOpponent(step_computer.x, step_computer.y);
+
+                    switch (status_computer)
+                    {
+                    case Status::HURT:
+                        mode = FINISHING;
+                        break;
+
+                    case Status::DESTROY:
+                        mode = SEARCH;
+                        break;
+
+                    case Status::MISSING:
+                        player = Player::GAMER;
+                        break;
+                    }
+                    break;
+                }
+
+                case AttackMode::FINISHING: {
+
+                    step_computer = player_computer->stepOfWeights();
+                    status_computer = player_gamer->checkKickOpponent(step_computer.x, step_computer.y);
+                    
+                    switch (status_computer){
                         case Status::HURT:
-                            mode = FINISHING;
+                            mode = FINISHING;;
                             break;
 
                         case Status::DESTROY:
@@ -81,49 +108,25 @@
                             break;
                         }
                         break;
-                    }
-
-                    case AttackMode::FINISHING: {
-
-                        step_computer = player_computer->stepOfWeights();
-                        status_computer = player_gamer->checkKickOpponent(step_computer.x, step_computer.y);
-                        
-                        switch (status_computer){
-                            case Status::HURT:
-                                mode = FINISHING;;
-                                break;
-
-                            case Status::DESTROY:
-                                mode = SEARCH;
-                                break;
-
-                            case Status::MISSING:
-                                player = Player::GAMER;
-                                break;
-                            }
-                            break;
-                    }
                 }
-
-                if (player_computer->emptyShipsVector()){
-                        emit game_over();
-                        break;
-                }
-                    
-                player_computer->stateProcessing(step_computer, status_computer);
-
-                emit draw_step_game();
-
-                if(status_computer != Status::MISSING){
-                    emit acces_step();  
-                }
-                else{
-                    emit can_make_step();
-                }
-                break;
             }
-        }
-}
-     
 
-  
+            if (player_computer->emptyShipsVector()){
+                    emit game_over();
+                    break;
+            }
+                
+            player_computer->stateProcessing(step_computer, status_computer);
+
+            emit draw_step_game();
+
+            if(status_computer != Status::MISSING){
+                emit acces_step();  
+            }
+            else{
+                emit can_make_step();
+            }
+            break;
+        }
+    }
+}

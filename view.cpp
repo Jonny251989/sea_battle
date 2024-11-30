@@ -3,31 +3,45 @@
 
 
 My_view::My_view(QWidget *parent, Gamer* gamer, Computer* computer) : QGraphicsView(parent), gamer_(gamer), computer_(computer){
-    width = 1200;
-    heigth = 1200;
     setFocusPolicy(Qt::NoFocus);
-    this->setFixedHeight(heigth);
-    this->setFixedWidth(width);
-
+    this->setFixedHeight(1150);
+    this->setFixedWidth(1150);
     this->setGeometry(0,0, 1150, 1150);
     this->setMinimumSize(1150, 1150);
 
     scene = new QGraphicsScene(this);
     this->setScene(scene);
     scene->setSceneRect(0,0, 1150, 1150); // Устанавливаем область графической сцены
-
-    this->set_all_collors();
-
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff); // Отключим скроллбар по горизонтали
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);   // Отключим скроллбар по вертикали
     this->setAlignment(Qt::AlignCenter);                        // Делаем привязку содержимого к центру
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);    // Растягиваем содержимое по виджету
 
-    
     this->draw_field();
-   
-    timerBeginGame = new QTimer();
+}
 
+void My_view::reload_all_objects_computer() {
+
+    for (auto item : m_moved_items_computer) {
+        scene->removeItem(item);
+        delete item;
+    }
+    m_moved_items_computer.clear();
+
+    std::vector<Ship*> ships_items_computer = computer_->getshipsOfComputer();
+    for(auto ship: ships_items_computer){
+        std::vector<Cords> corsdOfShipComputer = ship->getCordsOfShip();
+
+        for (auto it = corsdOfShipComputer.begin(); it != corsdOfShipComputer.end(); ++it) {
+            QGraphicsRectItem* ship_item_computer = new QGraphicsRectItem((it->x + 11) * w_rect,
+                                                                it->y * h_rect,
+                                                                w_rect, h_rect);
+        
+            ship_item_computer->setBrush(QBrush(QColor(159,97,4,255)));
+            scene->addItem(ship_item_computer);
+            m_moved_items_computer.push_back(ship_item_computer);
+        }
+    }
 }
 
 void My_view::game_over(){
@@ -46,8 +60,6 @@ void My_view::reload_all_fields_item_of_computer(){
         delete item;
     }
     m_moved_fields_item_of_computer.clear();
-
-
 
     std::vector<std::vector<MapItem>> field_item_computer = computer_->getFieldOfComputersItem();
 
@@ -106,7 +118,6 @@ void My_view::reload_all_fields_item_of_computer(){
     }
 }
 
-
 void My_view::reload_all_weights_of_computer(){
 
     QPen pen_free_item(Qt::black, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
@@ -117,7 +128,6 @@ void My_view::reload_all_weights_of_computer(){
         delete item;
     }
     m_moved_weights_of_computer.clear();
-
 
     std::vector<std::vector<int>> field_costs_computer = computer_->getVectorOfCosts();
     for(int rows = 0; rows < SIZE_FIELD ; ++rows){
@@ -159,7 +169,6 @@ void My_view::reload_all_weights_of_computer(){
         }
     }
 }
-
 
 void My_view::draw_games_steps(){
     for (auto item : m_moved_games_item) {
@@ -225,7 +234,6 @@ void My_view::draw_games_steps(){
     }
 }
 
-
 void My_view::reload_all_objects_gamer(Ship* ship) {
 
     for (auto item : m_moved_items) {
@@ -262,31 +270,6 @@ void My_view::reload_all_objects_gamer(Ship* ship) {
     }
 }
 
-void My_view::reload_all_objects_computer() {
-
-    for (auto item : m_moved_items_computer) {
-        scene->removeItem(item);
-        delete item;
-    }
-    m_moved_items_computer.clear();
-
-    std::vector<Ship*> ships_items_computer = computer_->getshipsOfComputer();
-    for(auto ship: ships_items_computer){
-        std::vector<Cords> corsdOfShipComputer = ship->getCordsOfShip();
-
-        for (auto it = corsdOfShipComputer.begin(); it != corsdOfShipComputer.end(); ++it) {
-            QGraphicsRectItem* ship_item_computer = new QGraphicsRectItem((it->x + 11) * w_rect,
-                                                                it->y * h_rect,
-                                                                w_rect, h_rect);
-        
-            ship_item_computer->setBrush(QBrush(QColor(159,97,4,255)));
-            scene->addItem(ship_item_computer);
-            m_moved_items_computer.push_back(ship_item_computer);
-        }
-    }
-}
-
-
 void My_view::draw_cords_for_attack(int x, int y){
 
 for (auto item : m_moved_points_attack) {
@@ -302,8 +285,6 @@ for (auto item : m_moved_points_attack) {
     scene->addItem(item);
     m_moved_points_attack.push_back(item);
 }
-
-
 
 void My_view::draw_field(){
     QPen pen_free_item(Qt::black, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
@@ -332,13 +313,7 @@ void My_view::draw_field(){
     }
 }
 
-void My_view::set_all_collors(){
-
-}
-
-
-My_view::~My_view()
-{
+My_view::~My_view(){
     
 }
 

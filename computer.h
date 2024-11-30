@@ -1,11 +1,8 @@
-#ifndef COMPUTER_H
-#define COMPUTER_H
+#pragma once
 
 #include <iostream>
 #include <vector>
 #include <string>
-
-#include "ranges"
 #include <iterator>
 #include <iomanip>
 #include <algorithm>
@@ -16,7 +13,6 @@
 #include <numeric>
 #include <functional>
 #include <random>
-
 #include <QGraphicsView>
 #include <QGraphicsItem>
 #include <QObject>
@@ -24,7 +20,6 @@
 
 #include "control.h"
 #include "ship.h"
-
 
 class Computer: public QObject {
     Q_OBJECT
@@ -41,10 +36,8 @@ class Computer: public QObject {
     std::vector<Cords> cordsOfShipAndNearshipscord;
     std::vector<Cords> cordsOfAllShips;
 
-
     std::vector<Cords> cordsOfShipAndNearshipscordOfComputer;
     std::vector<Cords> cordsOfShipOfComputer;
-
 
     int size_of_ship;
 
@@ -55,7 +48,6 @@ class Computer: public QObject {
     std::vector<std::vector<MapItem>> fieldOfMapItemsComputer;
 
     std::vector<std::vector<int> > costs;
-
 
     std::vector<Cords> enemyStrikes;
     std::vector<Cords> itsStrikes;
@@ -78,9 +70,6 @@ public:
 
     void stateProcessing(const Cords step, Status status);
 
-    void setupsShipsOnStrategy();
-
-    
     void preparingPointsToAttack();
 
     Cords maxValueOfWeigths();
@@ -101,9 +90,7 @@ public:
 
     Status checkKickOpponent(int, int);
 
-
     std::vector<Cords> getCordsOfShipsOfComputer();
-
 
     std::vector <std::vector<int>>& getVectorOfCosts();
 
@@ -115,9 +102,6 @@ public:
 
     void shipsSetupOnVector();
 
-    void reset_zero_vector();
-
-
     void add(int x, int y, Status status);
 
     void update_weights(int x, int y, Status status);
@@ -125,7 +109,6 @@ public:
     int reset_weights(int x, int y, Direction direction);
 
     void null_weights(int x, int y);
-
 
     Direction check_near_ships(int, int);
 
@@ -135,17 +118,8 @@ public:
 
     size_t distance_for_direction(int row, int column, int size_ship);
 
-
 signals:
     void send_cords_ships_computer();
     void send_costs_computer();
     void send_item_computer();
-
 };
-
-
-
-
-
-
-#endif

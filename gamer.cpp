@@ -6,43 +6,7 @@ Gamer::Gamer(QObject* parent):QObject(parent) {
     fieldOfMapItem = std::vector<std::vector<MapItem>>(size_of_board, std::vector<MapItem>(size_of_board, MapItem::EMPTY));
     vectorCordsOfShipsOpponent = std::vector<std::vector<MapItem>>(size_of_board, std::vector<MapItem>(size_of_board, MapItem::EMPTY));
     x = 0, y = 0;
-    ship = new Ship();
-    //timer_gemers_ships_setup = new QTimer();
-    //this->shipSetup();
-
-    //QObject::connect(this, SIGNAL(can_make_step()), this, SLOT(make_one_step()));
 }
-
-bool Gamer::getAccesToStepGamer() {
-    return next_ship;
-}
-
-std::vector<Cords>& Gamer::getCordsOfShipsOfGamer() {
-    return cordsOfAllShips;
-}
-
-std::vector<Ship*>& Gamer::getshipsOfGamer() {
-    return ShipsOfGamer;
-}
-
-void Gamer::addInItsStrikes(Cords step) {
-    itsStrikes.push_back(step);
-}
-
-std::vector<std::vector<MapItem>> Gamer::getFieldMapOfGamer(){
-    return vectorCordsOfShipsOpponent;
-}
-
-// void Gamer::shipSetup(){
-//     QObject::connect(timer_gemers_ships_setup, SIGNAL(timeout()), this, SLOT(setupGamersShips()));
-//     timer_gemers_ships_setup->start(100);
-// }
-
-// void Gamer::make_one_step(){
-//     timer_gemers_ships_computers_attack = new QTimer();
-//     QObject::connect(timer_gemers_ships_computers_attack, SIGNAL(timeout()), this, SLOT(stepForAttackComputersShips()));
-//     timer_gemers_ships_computers_attack->start(90);
-// }
 
 void Gamer::stepForAttackComputersShips(QKeyEvent* event){
 
@@ -59,13 +23,10 @@ void Gamer::stepForAttackComputersShips(QKeyEvent* event){
         case Qt::Key_Down:
             ++y;
             break;
-        case Qt::Key_Space:{
+        case Qt::Key_Return:{
             this->emit_point_start(x, y);
 
             if(can_make_step(x, y)){
-                //mode_search_cords_for_attack = false;
-                //timer_gemers_ships_computers_attack->stop();
-                //delete timer_gemers_ships_computers_attack;
                 emit could_steps(Cords(x,y));
                 return;
             }
@@ -79,7 +40,6 @@ void Gamer::stepForAttackComputersShips(QKeyEvent* event){
 void Gamer::checkBorder(){
     if (x > SIZE_FIELD - 1)
         x = 0;
-
     else if (x < 0)
         x = SIZE_FIELD - 1;
 
@@ -98,12 +58,6 @@ void Gamer::get_key_event(QKeyEvent* event){
 }
 
 void Gamer::setupGamersShips(QKeyEvent* event) {
-    if(index > SIZE_FIELD - 1){
-        next_ship = false;
-        is_setup = false;
-        this->addMapItemToFieldItem();
-        return;
-    }
 
     if(next_ship ){
         
@@ -116,50 +70,54 @@ void Gamer::setupGamersShips(QKeyEvent* event) {
 
         next_ship = false;
     }
-    else{
-         switch (event->key()) {
-            case Qt::Key_Left:{
-                if (ship->check_dif(cordsOfAllShips, -1, 0)) {
-                    ship->change_cords_to_move(-1, 0);
-                }
-                break;
+    switch (event->key()) {
+        case Qt::Key_Left:{
+            if (ship->check_dif(cordsOfAllShips, -1, 0)) {
+                ship->change_cords_to_move(-1, 0);
             }
-            case Qt::Key_Right:{
-                if (ship->check_dif(cordsOfAllShips, 1, 0)) {
-                    ship->change_cords_to_move(1, 0);
-                }
-                break;
-            }
-            case Qt::Key_Up:{
-                if (ship->check_dif(cordsOfAllShips, 0, -1)) {
-                    ship->change_cords_to_move(0, -1);
-                }
-                break;
-            }
-            case Qt::Key_Down:{
-                if (ship->check_dif(cordsOfAllShips, 0, 1)) {
-                    ship->change_cords_to_move(0, 1);
-                }
-                break;
-            }
-            case Qt::Key_Space:{
-                if (ship->check_rotate(cordsOfAllShips)) {
-                    ship->rotate_ship();
-                }
-                break;
-            }
-            case Qt::Key_Return :{
-                if (ship->validation_setting_ship_of_near_cords(cordsOfShipAndNearshipscord)) {
-                    ship->addCordsOfShip(cordsOfAllShips, cordsOfShipAndNearshipscord);
-                    index++;
-                    next_ship = true;
-                    ShipsOfGamer.push_back(ship);
-                }
-                break;
-            }
+            break;
         }
-        emit send_all_objects(ship);
+        case Qt::Key_Right:{
+            if (ship->check_dif(cordsOfAllShips, 1, 0)) {
+                ship->change_cords_to_move(1, 0);
+            }
+            break;
+        }
+        case Qt::Key_Up:{
+            if (ship->check_dif(cordsOfAllShips, 0, -1)) {
+                ship->change_cords_to_move(0, -1);
+            }
+            break;
+        }
+        case Qt::Key_Down:{
+            if (ship->check_dif(cordsOfAllShips, 0, 1)) {
+                ship->change_cords_to_move(0, 1);
+            }
+            break;
+        }
+        case Qt::Key_Space:{
+            if (ship->check_rotate(cordsOfAllShips)) {
+                ship->rotate_ship();
+            }
+            break;
+        }
+        case Qt::Key_Return :{
+            if (ship->validation_setting_ship_of_near_cords(cordsOfShipAndNearshipscord)) {
+                ship->addCordsOfShip(cordsOfAllShips, cordsOfShipAndNearshipscord);
+                index++;
+                next_ship = true;
+                ShipsOfGamer.push_back(ship);
+            }
+
+            if(index > SIZE_FIELD - 1){
+                is_setup = false;
+                this->addMapItemToFieldItem();
+                return;
+            }           
+            break;
+        }
     }
+emit send_all_objects(ship);
 }
 
 void Gamer::stateProcessing(Cords step, Status status){
@@ -193,17 +151,14 @@ void Gamer::addMapItemToFieldItem(){
 void Gamer::add(int x, int y, Status status) {
     switch (status) {
         case Status::MISSING:{
-            //fieldOfMapItem[y][x] = MapItem::MISS;
             vectorCordsOfShipsOpponent[y][x] = MapItem::MISS;
             break;
         }
         case Status::HURT:{
-            //fieldOfMapItem[y][x] = MapItem::WRECKED;
             vectorCordsOfShipsOpponent[y][x] = MapItem::WRECKED;
             break;
         }
         case Status::DESTROY:{
-            //fieldOfMapItem[y][x] = MapItem::DESTROYED;
             vectorCordsOfShipsOpponent[y][x] = MapItem::DESTROYED;
             break;
         }
@@ -341,4 +296,24 @@ Status Gamer::checkKickOpponent(int x, int y) {
         }
     }
     return Status::MISSING;
+}
+
+bool Gamer::getAccesToStepGamer() {
+    return next_ship;
+}
+
+std::vector<Cords>& Gamer::getCordsOfShipsOfGamer() {
+    return cordsOfAllShips;
+}
+
+std::vector<Ship*>& Gamer::getshipsOfGamer() {
+    return ShipsOfGamer;
+}
+
+void Gamer::addInItsStrikes(Cords step) {
+    itsStrikes.push_back(step);
+}
+
+std::vector<std::vector<MapItem>> Gamer::getFieldMapOfGamer(){
+    return vectorCordsOfShipsOpponent;
 }

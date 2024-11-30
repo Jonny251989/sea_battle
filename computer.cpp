@@ -17,39 +17,16 @@ Computer::Computer(QObject* parent):QObject(parent) {
     this->preparingPointsToAttack();
 }
 
-std::vector<Cords>  Computer::getCordsOfShipsOfComputer() {
-    return cordsOfShipOfComputer;
-}
-
-std::vector <std::vector<int>>& Computer::getVectorOfCosts() {
-    return costs;
-}
-
-
-std::vector<Ship*>& Computer::getshipsOfComputer() {
-    return ShipsOfComputer;
-}
-
-std::vector <std::vector<int>>& Computer::getMapOfPlayerComputer() {
-    return fieldOfDisplayOfComputer;
-}
-
-std::vector <std::vector<MapItem>>& Computer::getFieldItem(){
-    return field;
-}
-
-std::vector <std::vector<MapItem>>& Computer::getFieldOfComputersItem(){
-    return vectorCordsOfShipsOpponent;
-}
-
-void Computer::addMapItemToFieldItem(){
-    for(auto cords: cordsOfShipOfComputer){
-        fieldOfMapItemsComputer[cords.y][cords.x] = MapItem::SHIP;
+void  Computer::shipsSetupOnVector() {
+    for (int lenghtOfShip : ships_lenght) {
+        Rotate rotate = static_cast<Rotate> (random_generate(0, 1));
+        Ship* ship = new Ship(lenghtOfShip, rotate, lenghtOfShip);
+        ship->generatedCordsOfShip(cordsOfShipAndNearshipscordOfComputer);
+        ship->AddCordsOffComputerShip(cordsOfShipAndNearshipscordOfComputer, fieldOfDisplayOfComputer);
+        ShipsOfComputer.push_back(ship);
     }
-}
-
-bool Computer::getAccesToStepComputer() {
-    return accesToStep;
+    this->addMapItemToFieldItem();
+    emit send_cords_ships_computer();
 }
 
 void Computer::deleteShip(Ship* ship) {
@@ -502,15 +479,37 @@ void Computer::update_weights(int x, int y, Status status) {
 	}
 }
 
-void  Computer::shipsSetupOnVector() {
+std::vector<Cords>  Computer::getCordsOfShipsOfComputer() {
+    return cordsOfShipOfComputer;
+}
 
-    for (int lenghtOfShip : ships_lenght) {
-        Rotate rotate = static_cast<Rotate> (random_generate(0, 1));
-        Ship* ship = new Ship(lenghtOfShip, rotate, lenghtOfShip);
-        ship->generatedCordsOfShip(cordsOfShipAndNearshipscordOfComputer);
-        ship->AddCordsOffComputerShip(cordsOfShipAndNearshipscordOfComputer, fieldOfDisplayOfComputer);
-        ShipsOfComputer.push_back(ship);
+std::vector <std::vector<int>>& Computer::getVectorOfCosts() {
+    return costs;
+}
+
+
+std::vector<Ship*>& Computer::getshipsOfComputer() {
+    return ShipsOfComputer;
+}
+
+std::vector <std::vector<int>>& Computer::getMapOfPlayerComputer() {
+    return fieldOfDisplayOfComputer;
+}
+
+std::vector <std::vector<MapItem>>& Computer::getFieldItem(){
+    return field;
+}
+
+std::vector <std::vector<MapItem>>& Computer::getFieldOfComputersItem(){
+    return vectorCordsOfShipsOpponent;
+}
+
+void Computer::addMapItemToFieldItem(){
+    for(auto cords: cordsOfShipOfComputer){
+        fieldOfMapItemsComputer[cords.y][cords.x] = MapItem::SHIP;
     }
-    this->addMapItemToFieldItem();
-    emit send_cords_ships_computer();
+}
+
+bool Computer::getAccesToStepComputer() {
+    return accesToStep;
 }
