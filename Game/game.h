@@ -29,14 +29,11 @@
 class My_view;
 class Game: public QObject {
     Q_OBJECT
-
-
 private:
-
     std::vector<int> ships_lenght{ 4,3,3,2,2,2,1,1,1,1};
     My_view* view_;
-    Computer* player_computer;
-    Gamer* player_gamer;
+    Computer* computer_;
+    Gamer* gamer_;
     Player player = Player::GAMER;
     Status status_computer;
     Status status_gamer;

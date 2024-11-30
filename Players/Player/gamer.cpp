@@ -9,7 +9,6 @@ Gamer::Gamer(QObject* parent):QObject(parent) {
 }
 
 void Gamer::stepForAttackComputersShips(QKeyEvent* event){
-
     switch (event->key()) {
         case Qt::Key_Left:
             --x;
@@ -24,30 +23,12 @@ void Gamer::stepForAttackComputersShips(QKeyEvent* event){
             ++y;
             break;
         case Qt::Key_Return:{
-            this->emit_point_start(x, y);
-
-            if(can_make_step(x, y)){
-                emit could_steps(Cords(x,y));
-                return;
-            }
+            if(can_make_step(x, y)) emit could_steps(Cords(x,y));           
             break;
         }
     }
     this->checkBorder();
     this->emit_point_start(x, y);
-}
-
-void Gamer::checkBorder(){
-    if (x > SIZE_FIELD - 1)
-        x = 0;
-    else if (x < 0)
-        x = SIZE_FIELD - 1;
-
-    else if (y > SIZE_FIELD - 1)
-        y = 0;
-
-    else if (y < 0)
-        y = SIZE_FIELD - 1;
 }
 
 void Gamer::get_key_event(QKeyEvent* event){
@@ -109,9 +90,9 @@ void Gamer::setupGamersShips(QKeyEvent* event) {
                 ShipsOfGamer.push_back(ship);
             }
 
-            if(index > SIZE_FIELD - 1){
-                is_setup = false;
+            if(index > SIZE_FIELD){
                 this->addMapItemToFieldItem();
+                is_setup = false;
                 return;
             }           
             break;
@@ -120,8 +101,21 @@ void Gamer::setupGamersShips(QKeyEvent* event) {
 emit send_all_objects(ship);
 }
 
+void Gamer::checkBorder(){
+    if (x > SIZE_FIELD - 1)
+        x = 0;
+    else if (x < 0)
+        x = SIZE_FIELD - 1;
+
+    else if (y > SIZE_FIELD - 1)
+        y = 0;
+
+    else if (y < 0)
+        y = SIZE_FIELD - 1;
+}
+
 void Gamer::stateProcessing(Cords step, Status status){
-    this->add(step.x, step.y, status);
+    this->add(step.x_, step.y_, status);
     this->addInItsStrikes(step);
 }
 
@@ -135,7 +129,7 @@ bool Gamer::can_make_step(int x, int y){
 bool Gamer::checkItsStrikes(Cords step) {
 
     std::vector<Cords>::iterator iter = std::find_if(itsStrikes.begin(), itsStrikes.end(), [=](Cords one) {
-        return one.x == step.x && one.y == step.y;
+        return one.x_ == step.x_ && one.y_ == step.y_;
         });
         if (iter == itsStrikes.end())
             return true;
@@ -144,7 +138,7 @@ bool Gamer::checkItsStrikes(Cords step) {
 
 void Gamer::addMapItemToFieldItem(){
     for(auto cords: cordsOfAllShips){
-        fieldOfMapItem[cords.y][cords.x] = MapItem::SHIP;
+        fieldOfMapItem[cords.y_][cords.x_] = MapItem::SHIP;
     }
 }
 
@@ -283,7 +277,7 @@ Status Gamer::checkKickOpponent(int x, int y) {
 
     for (auto& ship : ShipsOfGamer) {
         for (auto cordsOfShip : ship->getCordsOfShip()) {
-            if (cordsOfShip.x == x && cordsOfShip.y == y) {
+            if (cordsOfShip.x_ == x && cordsOfShip.y_ == y) {
                 if (ship->getHealth() > 1) {
                     ship->healthDown();
                     return Status::HURT;

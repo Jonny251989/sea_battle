@@ -33,8 +33,8 @@ void My_view::reload_all_objects_computer() {
         std::vector<Cords> corsdOfShipComputer = ship->getCordsOfShip();
 
         for (auto it = corsdOfShipComputer.begin(); it != corsdOfShipComputer.end(); ++it) {
-            QGraphicsRectItem* ship_item_computer = new QGraphicsRectItem((it->x + 11) * w_rect,
-                                                                it->y * h_rect,
+            QGraphicsRectItem* ship_item_computer = new QGraphicsRectItem((it->x_ + 11) * w_rect,
+                                                                it->y_ * h_rect,
                                                                 w_rect, h_rect);
         
             ship_item_computer->setBrush(QBrush(QColor(159,97,4,255)));
@@ -245,8 +245,8 @@ void My_view::reload_all_objects_gamer(Ship* ship) {
     auto ship_items = ship->getCordsOfShip();
    
     for (auto it = ship_items.begin(); it != ship_items.end(); ++it) {
-        QGraphicsRectItem* ship_item = new QGraphicsRectItem(it->x * w_rect,
-                                                                it->y * h_rect,
+        QGraphicsRectItem* ship_item = new QGraphicsRectItem(it->x_ * w_rect,
+                                                                it->y_ * h_rect,
                                                                 w_rect, h_rect);
         
         ship_item->setBrush(QBrush(QColor(Qt::darkGray)));
@@ -259,8 +259,8 @@ void My_view::reload_all_objects_gamer(Ship* ship) {
     for(auto ship: ships_items){
         std::vector<Cords> corsdOfShip = ship->getCordsOfShip();
         for (auto it = corsdOfShip.begin(); it != corsdOfShip.end(); ++it) {
-            QGraphicsRectItem* ship_item = new QGraphicsRectItem(it->x * w_rect,
-                                                                    it->y * h_rect,
+            QGraphicsRectItem* ship_item = new QGraphicsRectItem(it->x_ * w_rect,
+                                                                    it->y_ * h_rect,
                                                                     w_rect, h_rect);
             
             ship_item->setBrush(QBrush(QColor(Qt::darkGray)));

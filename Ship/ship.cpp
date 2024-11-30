@@ -53,8 +53,8 @@
     void Ship::addNearCords(std::vector<Cords>& cordsOfShipAndNearshipscord) {
 
         for (Cords cord: cordsOfShip) {
-            for (int y = std::max(cord.y - 1, 0); y <= std::min(cord.y + 1, size_of_board - 1); ++y) {
-                for (int x = std::max(cord.x - 1, 0); x <= std::min(cord.x + 1, size_of_board - 1); ++x) {
+            for (int y = std::max(cord.y_ - 1, 0); y <= std::min(cord.y_ + 1, size_of_board - 1); ++y) {
+                for (int x = std::max(cord.x_ - 1, 0); x <= std::min(cord.x_ + 1, size_of_board - 1); ++x) {
                     if(check_cordsOfShipAndNearshipscord(x,y, cordsOfShipAndNearshipscord))
                         cordsOfShipAndNearshipscord.push_back(Cords(x, y));
                 }
@@ -75,7 +75,7 @@
     bool Ship::validation_setting_ship_of_near_cords(std::vector<Cords>& cordsOfShipAndNearshipscord) {
         for (auto near_cord : cordsOfShipAndNearshipscord) {
             for (Cords cor : cordsOfShip) {
-                if (near_cord.x == cor.x && near_cord.y == cor.y)
+                if (near_cord.x_ == cor.x_ && near_cord.y_ == cor.y_)
                     return false;
             }
         }
@@ -84,7 +84,7 @@
 
     bool Ship::check_cordsOfShipAndNearshipscord(int x, int y, std::vector<Cords>& cordsOfShipAndNearshipscord) {
         auto it = std::find_if(cordsOfShipAndNearshipscord.begin(), cordsOfShipAndNearshipscord.end(), [=](const Cords& c) {
-            return c.x == x && c.y == y;
+            return c.x_ == x && c.y_ == y;
             });
         if (it == cordsOfShipAndNearshipscord.end())
             return true;
@@ -130,18 +130,18 @@
         Cords head = *(cordsOfShip.begin());
 
         if (rotate == Rotate::Vertical) {
-            for (int col = head.x; col < head.x + lenght; ++col) {
-                if (!check_cordsOfShipAndNearshipscord(col, head.y, cordsOfShipAndNearshipscord))
+            for (int col = head.x_; col < head.x_ + lenght; ++col) {
+                if (!check_cordsOfShipAndNearshipscord(col, head.y_, cordsOfShipAndNearshipscord))
                     return false;
-                if (col < 0 || col > size_of_board - 1 || head.y < 0 || head.y > size_of_board - 1)
+                if (col < 0 || col > size_of_board - 1 || head.y_ < 0 || head.y_ > size_of_board - 1)
                     return false;
             }
         }
         else {
-            for (int row = head.y; row < head.y + lenght; ++row) {
-                if (!check_cordsOfShipAndNearshipscord(head.x, row, cordsOfShipAndNearshipscord))
+            for (int row = head.y_; row < head.y_ + lenght; ++row) {
+                if (!check_cordsOfShipAndNearshipscord(head.x_, row, cordsOfShipAndNearshipscord))
                     return false;
-                if (head.x < 0 || head.x > size_of_board - 1 || row < 0 || row > size_of_board - 1)
+                if (head.x_ < 0 || head.x_ > size_of_board - 1 || row < 0 || row > size_of_board - 1)
                     return false;
             }
         }
@@ -154,15 +154,15 @@
 
         if (rotate == Rotate::Vertical) {
             cordsOfShip.clear();
-            for (int col = head.x; col < head.x + lenght; ++col) {
-                cordsOfShip.push_back(Cords(col, head.y));
+            for (int col = head.x_; col < head.x_ + lenght; ++col) {
+                cordsOfShip.push_back(Cords(col, head.y_));
             }
             rotate = Rotate::Horizontal;
         }
         else {
             cordsOfShip.clear();
-            for (int row = head.y; row < head.y + lenght; ++row) {
-                cordsOfShip.push_back(Cords(head.x, row));
+            for (int row = head.y_; row < head.y_ + lenght; ++row) {
+                cordsOfShip.push_back(Cords(head.x_, row));
             }
             rotate = Rotate::Vertical;
         }
@@ -171,16 +171,16 @@
     void Ship::change_cords_to_move(int dx, int dy) {
         
         std::for_each(cordsOfShip.begin(), cordsOfShip.end(), [=](Cords& p){
-            p.x = p.x + dx; p.y = p.y + dy;
+            p.x_ = p.x_ + dx; p.y_ = p.y_ + dy;
             });
     }
 
     bool Ship::check_dif(std::vector<Cords>& cordsOfShips, int dx, int dy) {
    
             for (Cords cor : cordsOfShip) {
-                if (cor.x + dx < 0 || cor.x + dx > size_of_board - 1 || cor.y + dy < 0 || cor.y + dy > size_of_board - 1)
+                if (cor.x_ + dx < 0 || cor.x_ + dx > size_of_board - 1 || cor.y_ + dy < 0 || cor.y_ + dy > size_of_board - 1)
                     return false;
-                if(!check_cordsOfShipAndNearshipscord(cor.x + dx, cor.y + dy, cordsOfShips))
+                if(!check_cordsOfShipAndNearshipscord(cor.x_ + dx, cor.y_ + dy, cordsOfShips))
                     return false;
             } 
         return true;

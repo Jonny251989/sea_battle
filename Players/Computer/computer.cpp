@@ -36,9 +36,7 @@ void Computer::deleteShip(Ship* ship) {
             iter = ShipsOfComputer.erase(iter);
             delete ship;
             ship = nullptr;
-        }             
-
-        else
+        }else
             iter++;
     }
 }
@@ -50,8 +48,7 @@ void Computer::deleteShipFromVectorsShip(int lenght_) {
         if (*iter == lenght_){
             iter = ships_lenght.erase(iter);
             break;
-        }
-        else
+        }else
             iter++;   
     }
 }
@@ -79,22 +76,20 @@ int Computer::getMaxLengthInVec() {
 
     return 0;
 }
+
 Cords Computer::maxValueOfCosts() {
     int max = costs[0][0];
-
     for (int i = 0; i < size_of_board; ++i) {
         for (int j = 0; j < size_of_board; ++j) {
-            if (max < costs[i][j]) {
-                max = costs[i][j];
-            }
+            if (max < costs[i][j]) 
+                max = costs[i][j]; 
         }
     }
     std::vector<Cords> maxVl;
     for (int i = 0; i < size_of_board; ++i) {
         for (int j = 0; j < size_of_board; ++j) {
-            if (max == costs[i][j]) {
-                maxVl.push_back(Cords(j, i));
-            }
+            if (max == costs[i][j]) 
+                maxVl.push_back(Cords(j, i));        
         }
     }
     Cords cords = maxVl[random_generate(0, maxVl.size() - 1)];
@@ -108,17 +103,15 @@ Cords Computer::maxValueOfWeigths() {
 
     for (int i = 0; i < size_of_board; ++i) {
         for (int j = 0; j < size_of_board; ++j) {
-            if (max < weights[i][j]) {
-                max = weights[i][j];
-            }
+            if (max < weights[i][j]) 
+                max = weights[i][j];        
         }
     }
     std::vector<Cords> maxVl;
     for (int i = 0; i < size_of_board; ++i) {
         for (int j = 0; j < size_of_board; ++j) {
-            if (max == weights[i][j]) {
-                maxVl.push_back(Cords(j, i));
-            }
+            if (max == weights[i][j]) 
+                maxVl.push_back(Cords(j, i));  
         }
     }
     Cords cords = maxVl[random_generate(0, maxVl.size() - 1)];
@@ -149,7 +142,7 @@ Cords Computer::stepOfWeights() {
 bool Computer::checkItsStrikes(Cords step) {
 
     std::vector<Cords>::iterator iter = std::find_if(itsStrikes.begin(), itsStrikes.end(), [=](Cords one) {
-        return one.x == step.x && one.y == step.y;
+        return one.x_ == step.x_ && one.y_ == step.y_;
         });
     if (iter == itsStrikes.end())
         return false;
@@ -162,12 +155,11 @@ Status Computer::checkKickOpponent(int x, int y) {
     for (auto ship : ShipsOfComputer) {
 
         for (auto cordsOfShip : ship->getCordsOfShip()) {
-            if (cordsOfShip.x == x && cordsOfShip.y == y) {
+            if (cordsOfShip.x_ == x && cordsOfShip.y_ == y) {
                 if (ship->getHealth() > 1) {
                     ship->healthDown();
                     return Status::HURT;
-                }
-                else {
+                }else {
                     this->deleteShip(ship);
                     return Status::DESTROY;
                 }
@@ -183,9 +175,9 @@ bool Computer::emptyShipsVector() {
 
 void Computer::stateProcessing(const Cords step, Status status) {
     this->addInItsStrikes(step);
-    this->add(step.x, step.y, status);
+    this->add(step.x_, step.y_, status);
     
-    this->strategy(step.x, step.y, status);
+    this->strategy(step.x_, step.y_, status);
 
     this->cleanCostsVector();
     this->calc_for_shipSize();
@@ -196,17 +188,14 @@ void Computer::stateProcessing(const Cords step, Status status) {
 void Computer::add(int x, int y, Status status) {
     switch (status) {
         case Status::MISSING:{
-            //field[y][x] = MapItem::MISS;
             vectorCordsOfShipsOpponent[y][x] = MapItem::MISS;
             break;
         }
         case Status::HURT:{
-            //field[y][x] = MapItem::WRECKED;
             vectorCordsOfShipsOpponent[y][x] = MapItem::WRECKED;
             break;
         }
         case Status::DESTROY:{
-            //field[y][x] = MapItem::WRECKED;
             vectorCordsOfShipsOpponent[y][x] = MapItem::WRECKED;
             break;
         }
@@ -215,9 +204,8 @@ void Computer::add(int x, int y, Status status) {
 
 void Computer::cleanCostsVector() {
     for (size_t y = 0; y < size_of_board; ++y) {
-        for (size_t x = 0; x < size_of_board; ++x) {
-            costs[y][x] = 0;
-        }
+        for (size_t x = 0; x < size_of_board; ++x) 
+            costs[y][x] = 0;       
     }
 }
 
@@ -226,9 +214,8 @@ void Computer::calc_for_shipSize() {
     size_t shipSize = this->getMaxLengthInVec();
 
     for (size_t y = 0; y < size_of_board; ++y) {
-        for (size_t x = 0; x < size_of_board; ++x) {
-            costs[y][x] = distance_for_direction(x, y, shipSize);
-        }
+        for (size_t x = 0; x < size_of_board; ++x) 
+            costs[y][x] = distance_for_direction(x, y, shipSize);   
     }
 }
 
@@ -506,7 +493,7 @@ std::vector <std::vector<MapItem>>& Computer::getFieldOfComputersItem(){
 
 void Computer::addMapItemToFieldItem(){
     for(auto cords: cordsOfShipOfComputer){
-        fieldOfMapItemsComputer[cords.y][cords.x] = MapItem::SHIP;
+        fieldOfMapItemsComputer[cords.y_][cords.x_] = MapItem::SHIP;
     }
 }
 
