@@ -257,94 +257,37 @@ void Computer::calc_for_shipSize() {
     }
 }
 
-size_t Computer::distance_for_direction(int x, int y, int shipSize) {
+size_t Computer::distance_for_direction( int x, int y, int shipSize) { //distance_for_direction
     size_t total_cost = 0;
-    
-    auto calc_dist = [this, shipSize](int start, int end, int step, int fixed, bool vert) {
-        size_t dist = 0;
-        if(step > 0){
-             for (int i = start; i < std::min(end, size_of_board); i += step){
-                if ((vert ? vectorCordsOfShipsOpponent[i][fixed] : vectorCordsOfShipsOpponent[fixed][i]) != EMPTY) break;
-                dist++;
-             }
-        }else{
-             for (int i = start; i >= std::max(end, 0); i += step){
-                if ((vert ? vectorCordsOfShipsOpponent[i][fixed] : vectorCordsOfShipsOpponent[fixed][i]) != EMPTY) break;
-                dist++;
-             }
+    auto calculate_distance = [this, shipSize](int start, int end, int step, int fixed_coord, bool is_vertical) {
+        size_t distance = 0;
+        for (int i = start; (step > 0) ? (i < end) : (i >= end); i += step) {
+            if ((is_vertical ? vectorCordsOfShipsOpponent[i][fixed_coord] : vectorCordsOfShipsOpponent[fixed_coord][i]) != MapItem::EMPTY) {
+                break;
+            }
+            ++distance;
         }
-        return dist;
+        return distance;
     };
 
-    size_t up = calc_dist(y, y  - (shipSize - 1), -1, x, true);
-    size_t down = calc_dist(y, y + shipSize, 1, x, true);
-    size_t left = calc_dist(x, x  - (shipSize - 1), -1, y, false);
-    size_t right = calc_dist(x, x + shipSize, 1, y, false);
+    // Вверх и вниз (по оси Y)
+    size_t up_distance = calculate_distance(y, std::max((y + 1) - shipSize, 0), -1, x, true);
+    size_t down_distance = calculate_distance(y, std::min(y + shipSize, size_of_board), 1, x, true);
 
-    std::vector<size_t> dists = {up, down, left, right};
+    // Влево и вправо (по оси X)
+    size_t left_distance = calculate_distance(x, std::max((x + 1) - shipSize, 0), -1, y, false);
+    size_t right_distance = calculate_distance(x, std::min(x + shipSize, size_of_board), 1, y, false);
+
+    // Преобразование в cost (расстояние, пригодное для использования корабля)
+    std::vector<size_t> distances = {up_distance, down_distance, left_distance, right_distance};
     std::vector<size_t> costs;
-    std::transform(dists.begin(), dists.end(), std::back_inserter(costs),
-        [shipSize](size_t dist) { 
-            auto out = (shipSize != 1) ? (dist == shipSize) : (dist >= 1); 
-            return out; 
-        });
+    std::transform(distances.begin(), distances.end(), std::back_inserter(costs), [shipSize](size_t dist) {
+        return (shipSize != 1) ? (dist == shipSize) : (dist >= 1);
+    });
 
+    // Суммирование всех стоимости
     total_cost = std::accumulate(costs.begin(), costs.end(), 0);
-
     return total_cost;
-}
-
-size_t Computer::dist_for_dir( int x, int y, int shipSize) {
-
-    size_t distance = 0;
-    std::vector<size_t> distances_vec;
-
-    for (int d_y = y; d_y < std::min(y + shipSize, size_of_board); ++d_y) {
-        if (vectorCordsOfShipsOpponent[d_y][x] != MapItem::EMPTY) {
-            break;
-        }
-        distance++;
-    }
-    distances_vec.push_back(distance);
-    distance = 0;
-
-    for (int d_y = y; d_y >= std::max(y - shipSize + 1, 0); --d_y) {
-        if (vectorCordsOfShipsOpponent[d_y][x] != MapItem::EMPTY) {
-            break;
-        }
-        distance++;
-    }
-    distances_vec.push_back(distance);
-    distance = 0;
-
-    for (int d_x = x; d_x < std::min(x + shipSize, size_of_board); ++d_x) {
-        if (vectorCordsOfShipsOpponent[y][d_x] != MapItem::EMPTY) {
-            break;
-        }
-        distance++;
-    }
-    distances_vec.push_back(distance);
-    distance = 0;
-
-    for (int d_x = x; d_x >= std::max(x - shipSize + 1, 0); --d_x) {
-        if (vectorCordsOfShipsOpponent[y][d_x] != MapItem::EMPTY) {
-            break;
-        }
-        distance++;
-    }
-    distances_vec.push_back(distance);
-
-    std::vector<size_t> costs;
-    std::transform(distances_vec.begin(),distances_vec.end(), std::back_inserter(costs), [shipSize](size_t dist) {
-        if(shipSize != 1 )
-            return  dist == shipSize;
-        
-        else
-            return 1 <= dist;
-            });
-
-
-    return std::accumulate(costs.begin(), costs.end(), 0);
 }
 
 void Computer::null_weights(int x, int y) {
