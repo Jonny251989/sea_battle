@@ -262,13 +262,13 @@ size_t Computer::distance_for_direction(int x, int y, int shipSize) {
     
     auto calc_dist = [this, shipSize](int start, int end, int step, int fixed, bool vert) {
         size_t dist = 0;
-        if(step){
-             for (int i = start; i < end; i += step){
+        if(step > 0){
+             for (int i = start; i < std::min(end, size_of_board); i += step){
                 if ((vert ? vectorCordsOfShipsOpponent[i][fixed] : vectorCordsOfShipsOpponent[fixed][i]) != EMPTY) break;
                 dist++;
              }
         }else{
-             for (int i = start; i <= end; i += step){
+             for (int i = start; i >= std::max(end, 0); i += step){
                 if ((vert ? vectorCordsOfShipsOpponent[i][fixed] : vectorCordsOfShipsOpponent[fixed][i]) != EMPTY) break;
                 dist++;
              }
@@ -276,10 +276,10 @@ size_t Computer::distance_for_direction(int x, int y, int shipSize) {
         return dist;
     };
 
-    size_t up = calc_dist(y, std::max(y - shipSize + 1, 0), -1, x, true);
-    size_t down = calc_dist(y, std::min(y + shipSize, size_of_board), 1, x, true);
-    size_t left = calc_dist(x, std::max(x - shipSize + 1, 0), -1, y, false);
-    size_t right = calc_dist(x, std::min(x + shipSize, size_of_board), 1, y, false);
+    size_t up = calc_dist(y, y  - (shipSize - 1), -1, x, true);
+    size_t down = calc_dist(y, y + shipSize, 1, x, true);
+    size_t left = calc_dist(x, x  - (shipSize - 1), -1, y, false);
+    size_t right = calc_dist(x, x + shipSize, 1, y, false);
 
     std::vector<size_t> dists = {up, down, left, right};
     std::vector<size_t> costs;
