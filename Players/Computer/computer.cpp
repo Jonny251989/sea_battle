@@ -336,7 +336,6 @@ void Computer::mark_cells_of_environment(int x, int y){
 
 int Computer::reset_weights(int x, int y, Direction direction) {
 	int count = 0;
-
     int shipSize = this->getMaxLengthInVec();
 
 	if (direction == HORIZONTAL) {
