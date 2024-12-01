@@ -57,9 +57,8 @@ class Computer: public QObject {
 public:
 
     Computer(QObject *parent = nullptr);
-
     std::vector <std::vector<MapItem>>& getFieldItem();
-
+    size_t dist_for_dir( int x, int y, int shipSize);
     void mark_cells_of_environment(int x, int y);
 
     bool getAccesToStepComputer();

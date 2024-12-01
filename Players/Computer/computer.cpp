@@ -257,7 +257,44 @@ void Computer::calc_for_shipSize() {
     }
 }
 
-size_t Computer::distance_for_direction( int x, int y, int shipSize) {
+size_t Computer::distance_for_direction(int x, int y, int shipSize) {
+    size_t total_cost = 0;
+    
+    auto calc_dist = [this, shipSize](int start, int end, int step, int fixed, bool vert) {
+        size_t dist = 0;
+        if(step){
+             for (int i = start; i < end; i += step){
+                if ((vert ? vectorCordsOfShipsOpponent[i][fixed] : vectorCordsOfShipsOpponent[fixed][i]) != EMPTY) break;
+                dist++;
+             }
+        }else{
+             for (int i = start; i <= end; i += step){
+                if ((vert ? vectorCordsOfShipsOpponent[i][fixed] : vectorCordsOfShipsOpponent[fixed][i]) != EMPTY) break;
+                dist++;
+             }
+        }
+        return dist;
+    };
+
+    size_t up = calc_dist(y, std::max(y - shipSize + 1, 0), -1, x, true);
+    size_t down = calc_dist(y, std::min(y + shipSize, size_of_board), 1, x, true);
+    size_t left = calc_dist(x, std::max(x - shipSize + 1, 0), -1, y, false);
+    size_t right = calc_dist(x, std::min(x + shipSize, size_of_board), 1, y, false);
+
+    std::vector<size_t> dists = {up, down, left, right};
+    std::vector<size_t> costs;
+    std::transform(dists.begin(), dists.end(), std::back_inserter(costs),
+        [shipSize](size_t dist) { 
+            auto out = (shipSize != 1) ? (dist == shipSize) : (dist >= 1); 
+            return out; 
+        });
+
+    total_cost = std::accumulate(costs.begin(), costs.end(), 0);
+
+    return total_cost;
+}
+
+size_t Computer::dist_for_dir( int x, int y, int shipSize) {
 
     size_t distance = 0;
     std::vector<size_t> distances_vec;
