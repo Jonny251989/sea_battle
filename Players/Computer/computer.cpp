@@ -77,6 +77,26 @@ int Computer::getMaxLengthInVec() {
     return 0;
 }
 
+Cords Computer::maxValue(const std::vector<std::vector<int>>& cost_weight){
+    int max = cost_weight[0][0];
+    for (int i = 0; i < size_of_board; ++i) {
+        for (int j = 0; j < size_of_board; ++j) {
+            if (max < cost_weight[i][j]) 
+                max = cost_weight[i][j]; 
+        }
+    }
+    std::vector<Cords> maxVl;
+    for (int i = 0; i < size_of_board; ++i) {
+        for (int j = 0; j < size_of_board; ++j) {
+            if (max == cost_weight[i][j]) 
+                maxVl.push_back(Cords(j, i));        
+        }
+    }
+    Cords cords = maxVl[random_generate(0, maxVl.size() - 1)];
+
+    return cords;
+}
+
 Cords Computer::maxValueOfCosts() {
     int max = costs[0][0];
     for (int i = 0; i < size_of_board; ++i) {
@@ -119,11 +139,29 @@ Cords Computer::maxValueOfWeigths() {
     return cords;
 }
 
+Cords Computer::stepOff( Cords(Computer::*fnc)() ){
+    Cords step = (this->*fnc)();
+
+    while (this->checkItsStrikes(step)) 
+        step = (this->*fnc)();
+
+    return step;
+}
+
+Cords Computer::stepOfCostsWeights(const std::vector<std::vector<int>>& cost_weight) {
+    Cords step = maxValue(cost_weight);
+
+    while (this->checkItsStrikes(step)) 
+        step = maxValue(cost_weight);
+    
+    return step;
+}
+
 Cords Computer::stepOfCosts() {
 
     Cords step = maxValueOfCosts();
 
-    while (this->checkItsStrikes(step)) {
+    while (checkItsStrikes(step)) {
         step = maxValueOfCosts();
     }
     return step;
@@ -284,15 +322,14 @@ void Computer::null_weights(int x, int y) {
 }
 
 void Computer::mark_cells_of_environment(int x, int y){
-
     for (int c_y = std::max(y - 1, 0); c_y <= std::min(y + 1, size_of_board - 1); ++c_y) {
 		for (int c_x = std::max(x - 1, 0); c_x <= std::min(x + 1, size_of_board - 1); ++c_x) {
-
-			if ((std::abs(x - c_x) <= 1 && std::abs(y - c_y) <= 1) || (std::abs(y - c_y) <= 1 && std::abs(x - c_x) <= 1))
+			if ((std::abs(x - c_x) <= 1 && std::abs(y - c_y) <= 1) || (std::abs(y - c_y) <= 1 && std::abs(x - c_x) <= 1)){
 				if(vectorCordsOfShipsOpponent[c_y][c_x] != MapItem::WRECKED && vectorCordsOfShipsOpponent[c_y][c_x] != MapItem::DESTROYED){
                     vectorCordsOfShipsOpponent[c_y][c_x] = MapItem::SURROUNDING;
                     itsStrikes.push_back(Cords(c_x, c_y));
                 }
+            }
 		}
 	}
 }

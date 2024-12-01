@@ -90,10 +90,9 @@ void Gamer::setupGamersShips(QKeyEvent* event) {
                 ShipsOfGamer.push_back(ship);
             }
 
-            if(index > SIZE_FIELD){
+            if(index > SIZE_FIELD - 1){
                 this->addMapItemToFieldItem();
                 is_setup = false;
-                return;
             }           
             break;
         }

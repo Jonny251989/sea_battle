@@ -71,9 +71,10 @@ public:
     void stateProcessing(const Cords step, Status status);
 
     void preparingPointsToAttack();
-
+    Cords maxValue(const std::vector<std::vector<int>>&);
     Cords maxValueOfWeigths();
     Cords maxValueOfCosts();
+    
     int getMaxLengthInVec();
 
     bool emptyShipsVector();
@@ -83,8 +84,10 @@ public:
     void deleteShip(Ship* ship);
     void deleteShipFromVectorsShip(int);
 
+    Cords stepOfCostsWeights(const std::vector<std::vector<int>>&); 
     Cords stepOfCosts();
     Cords stepOfWeights();
+    Cords stepOff( Cords(Computer::*fnc)());
 
     bool checkItsStrikes(Cords step);
 
